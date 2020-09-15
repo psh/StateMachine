@@ -36,7 +36,7 @@ internal class StateMachineTest {
                 }
             }
             onTransition {
-                val validTransition = it as? StateMachine.Transition.Valid ?: return@onTransition
+                val validTransition = it as? Transition.Valid ?: return@onTransition
                 when (validTransition.sideEffect) {
                     SideEffect.LogMelted -> logger.log(ON_MELTED_MESSAGE)
                     SideEffect.LogFrozen -> logger.log(ON_FROZEN_MESSAGE)
@@ -63,7 +63,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Liquid)
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(State.Solid, Event.OnMelted, State.Liquid, SideEffect.LogMelted)
+                Transition.Valid(State.Solid, Event.OnMelted, State.Liquid, SideEffect.LogMelted)
             )
             then(logger).should().log(ON_MELTED_MESSAGE)
         }
@@ -79,7 +79,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Solid)
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(State.Liquid, Event.OnFrozen, State.Solid, SideEffect.LogFrozen)
+                Transition.Valid(State.Liquid, Event.OnFrozen, State.Solid, SideEffect.LogFrozen)
             )
             then(logger).should().log(ON_FROZEN_MESSAGE)
         }
@@ -95,7 +95,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Gas)
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(State.Liquid, Event.OnVaporized, State.Gas, SideEffect.LogVaporized)
+                Transition.Valid(State.Liquid, Event.OnVaporized, State.Gas, SideEffect.LogVaporized)
             )
             then(logger).should().log(ON_VAPORIZED_MESSAGE)
         }
@@ -111,7 +111,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Liquid)
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(State.Gas, Event.OnCondensed, State.Liquid, SideEffect.LogCondensed)
+                Transition.Valid(State.Gas, Event.OnCondensed, State.Liquid, SideEffect.LogCondensed)
             )
             then(logger).should().log(ON_CONDENSED_MESSAGE)
         }
@@ -198,7 +198,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Locked(credit = 10))
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(
+                Transition.Valid(
                     State.Locked(credit = 0),
                     Event.InsertCoin(10),
                     State.Locked(credit = 10),
@@ -218,7 +218,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Unlocked)
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(
+                Transition.Valid(
                     State.Locked(credit = 35),
                     Event.InsertCoin(15),
                     State.Unlocked,
@@ -238,7 +238,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Unlocked)
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(
+                Transition.Valid(
                     State.Locked(credit = 35),
                     Event.InsertCoin(20),
                     State.Unlocked,
@@ -258,7 +258,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Locked(credit = 35))
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(
+                Transition.Valid(
                     State.Locked(credit = 35),
                     Event.AdmitPerson,
                     State.Locked(credit = 35),
@@ -278,7 +278,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Broken(oldState = State.Locked(credit = 15)))
             assertThat(transitionToBroken).isEqualTo(
-                StateMachine.Transition.Valid(
+                Transition.Valid(
                     State.Locked(credit = 15),
                     Event.MachineDidFail,
                     State.Broken(oldState = State.Locked(credit = 15)),
@@ -298,7 +298,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Locked(credit = 0))
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(
+                Transition.Valid(
                     State.Unlocked,
                     Event.AdmitPerson,
                     State.Locked(credit = 0),
@@ -318,7 +318,7 @@ internal class StateMachineTest {
             // Then
             assertThat(stateMachine.state).isEqualTo(State.Locked(credit = 15))
             assertThat(transition).isEqualTo(
-                StateMachine.Transition.Valid(
+                Transition.Valid(
                     State.Broken(oldState = State.Locked(credit = 15)),
                     Event.MachineRepairDidComplete,
                     State.Locked(credit = 15),
@@ -361,8 +361,8 @@ internal class StateMachineTest {
 
         class WithInitialState {
 
-            private val onTransitionListener1 = mock<(StateMachine.Transition<State, Event, SideEffect>) -> Unit>()
-            private val onTransitionListener2 = mock<(StateMachine.Transition<State, Event, SideEffect>) -> Unit>()
+            private val onTransitionListener1 = mock<(Transition<State, Event, SideEffect>) -> Unit>()
+            private val onTransitionListener2 = mock<(Transition<State, Event, SideEffect>) -> Unit>()
             private val onStateAExitListener1 = mock<State.(Event) -> Unit>()
             private val onStateAExitListener2 = mock<State.(Event) -> Unit>()
             private val onStateCEnterListener1 = mock<State.(Event) -> Unit>()
@@ -414,7 +414,7 @@ internal class StateMachineTest {
 
                 // Then
                 assertThat(transitionFromStateAToStateB).isEqualTo(
-                    StateMachine.Transition.Valid(State.A, Event.E1, State.B, null)
+                    Transition.Valid(State.A, Event.E1, State.B, null)
                 )
 
                 // When
@@ -422,7 +422,7 @@ internal class StateMachineTest {
 
                 // Then
                 assertThat(transitionFromStateBToStateC).isEqualTo(
-                    StateMachine.Transition.Valid(State.B, Event.E3, State.C, SideEffect.SE1)
+                    Transition.Valid(State.B, Event.E3, State.C, SideEffect.SE1)
                 )
             }
 
@@ -448,7 +448,7 @@ internal class StateMachineTest {
 
                 // Then
                 then(onTransitionListener1).should().invoke(
-                    StateMachine.Transition.Valid(State.A, Event.E1, State.B, null)
+                    Transition.Valid(State.A, Event.E1, State.B, null)
                 )
 
                 // When
@@ -456,14 +456,14 @@ internal class StateMachineTest {
 
                 // Then
                 then(onTransitionListener2).should()
-                    .invoke(StateMachine.Transition.Valid(State.B, Event.E3, State.C, SideEffect.SE1))
+                    .invoke(Transition.Valid(State.B, Event.E3, State.C, SideEffect.SE1))
 
                 // When
                 stateMachine.transition(Event.E4)
 
                 // Then
                 then(onTransitionListener2).should()
-                    .invoke(StateMachine.Transition.Valid(State.C, Event.E4, State.C, null))
+                    .invoke(Transition.Valid(State.C, Event.E4, State.C, null))
             }
 
             @Test
@@ -494,7 +494,7 @@ internal class StateMachineTest {
 
                 // Then
                 assertThat(transition).isEqualTo(
-                    StateMachine.Transition.Invalid<State, Event, SideEffect>(State.A, Event.E3)
+                    Transition.Invalid<State, Event, SideEffect>(State.A, Event.E3)
                 )
                 assertThat(stateMachine.state).isEqualTo(fromState)
             }
@@ -548,8 +548,8 @@ internal class StateMachineTest {
 
         class WithInitialState {
 
-            private val onTransitionListener1 = mock<(StateMachine.Transition<String, Int, String>) -> Unit>()
-            private val onTransitionListener2 = mock<(StateMachine.Transition<String, Int, String>) -> Unit>()
+            private val onTransitionListener1 = mock<(Transition<String, Int, String>) -> Unit>()
+            private val onTransitionListener2 = mock<(Transition<String, Int, String>) -> Unit>()
             private val onStateCEnterListener1 = mock<String.(Int) -> Unit>()
             private val onStateCEnterListener2 = mock<String.(Int) -> Unit>()
             private val onStateAExitListener1 = mock<String.(Int) -> Unit>()
@@ -598,7 +598,7 @@ internal class StateMachineTest {
 
                 // Then
                 assertThat(transitionFromStateAToStateB).isEqualTo(
-                    StateMachine.Transition.Valid(STATE_A, EVENT_1, STATE_B, null)
+                    Transition.Valid(STATE_A, EVENT_1, STATE_B, null)
                 )
 
                 // When
@@ -606,7 +606,7 @@ internal class StateMachineTest {
 
                 // Then
                 assertThat(transitionFromStateBToStateC).isEqualTo(
-                    StateMachine.Transition.Valid(STATE_B, EVENT_3, STATE_C, SIDE_EFFECT_1)
+                    Transition.Valid(STATE_B, EVENT_3, STATE_C, SIDE_EFFECT_1)
                 )
             }
 
@@ -632,7 +632,7 @@ internal class StateMachineTest {
 
                 // Then
                 then(onTransitionListener1).should().invoke(
-                    StateMachine.Transition.Valid(STATE_A, EVENT_1, STATE_B, null)
+                    Transition.Valid(STATE_A, EVENT_1, STATE_B, null)
                 )
 
                 // When
@@ -640,7 +640,7 @@ internal class StateMachineTest {
 
                 // Then
                 then(onTransitionListener2).should().invoke(
-                    StateMachine.Transition.Valid(STATE_B, EVENT_3, STATE_C, SIDE_EFFECT_1)
+                    Transition.Valid(STATE_B, EVENT_3, STATE_C, SIDE_EFFECT_1)
                 )
             }
 
@@ -672,7 +672,7 @@ internal class StateMachineTest {
 
                 // Then
                 assertThat(transition).isEqualTo(
-                    StateMachine.Transition.Invalid<String, Int, String>(STATE_A, EVENT_3)
+                    Transition.Invalid<String, Int, String>(STATE_A, EVENT_3)
                 )
                 assertThat(stateMachine.state).isEqualTo(fromState)
             }
