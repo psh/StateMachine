@@ -10,7 +10,7 @@ A Kotlin DSL for finite state machine.
 
 In this example, we create a `StateMachine` from the following state diagram.
 
-![State Diagram](./example/activity-diagram.png)
+![State Diagram](samples/matter/activity-diagram.png)
 
 Define states, event, and side effects:
 ~~~kotlin

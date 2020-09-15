@@ -7,31 +7,31 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.8.0'
     }
 }
 
 group GROUP
 version VERSION_NAME
 
-apply plugin: 'com.vanniktech.maven.publish'
-apply plugin: 'kotlin'
+allprojects {
+    apply plugin: 'kotlin'
 
-repositories {
-    jcenter()
-    mavenCentral()
-}
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
 
-dependencies {
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
-    testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    testImplementation 'org.assertj:assertj-core:3.11.1'
-}
+    dependencies {
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
+        testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+        testImplementation 'org.assertj:assertj-core:3.11.1'
+    }
 
-compileKotlin {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+    compileKotlin {
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+    }
 }

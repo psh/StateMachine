@@ -1,0 +1,11 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.8.0'
+    }
+}
+
+apply plugin: 'com.vanniktech.maven.publish'
