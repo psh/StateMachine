@@ -3,7 +3,7 @@ package com.tinder
 import java.util.concurrent.atomic.AtomicReference
 
 class StateMachine<STATE : Any, EVENT : Any, SIDE_EFFECT : Any> private constructor(
-    private val graph: Graph<STATE, EVENT, SIDE_EFFECT>
+        private val graph: Graph<STATE, EVENT, SIDE_EFFECT>
 ) {
 
     private val stateRef = AtomicReference(graph.initialState)
@@ -49,16 +49,26 @@ class StateMachine<STATE : Any, EVENT : Any, SIDE_EFFECT : Any> private construc
     }
 
     private fun STATE.getDefinition() = graph.stateDefinitions
-        .filter { it.key.matches(this) }
-        .map { it.value }
-        .firstOrNull() ?: error("Missing definition for state ${this.javaClass.simpleName}!")
+            .filter { it.key.matches(this) }
+            .map { it.value }
+            .firstOrNull() ?: error("Missing definition for state ${this.javaClass.simpleName}!")
 
     private fun STATE.notifyOnEnter(cause: EVENT) {
-        getDefinition().onEnterListeners.forEach { it(this, cause) }
+        graph.onEnterListeners.forEach {
+            it(this, cause)
+        }
+        getDefinition().onEnterListeners.forEach {
+            it(this, cause)
+        }
     }
 
     private fun STATE.notifyOnExit(cause: EVENT) {
-        getDefinition().onExitListeners.forEach { it(this, cause) }
+        graph.onExitListeners.forEach {
+            it(this, cause)
+        }
+        getDefinition().onExitListeners.forEach {
+            it(this, cause)
+        }
     }
 
     private fun Transition<STATE, EVENT, SIDE_EFFECT>.notifyOnTransition() {
@@ -67,7 +77,7 @@ class StateMachine<STATE : Any, EVENT : Any, SIDE_EFFECT : Any> private construc
 
     companion object {
         fun <STATE : Any, EVENT : Any, SIDE_EFFECT : Any> create(
-            init: GraphBuilder<STATE, EVENT, SIDE_EFFECT>.() -> Unit
+                init: GraphBuilder<STATE, EVENT, SIDE_EFFECT>.() -> Unit
         ): StateMachine<STATE, EVENT, SIDE_EFFECT> {
             return create(null, init)
         }

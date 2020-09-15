@@ -1,11 +1,13 @@
 package com.tinder
 
 class GraphBuilder<STATE : Any, EVENT : Any, SIDE_EFFECT : Any>(
-    graph: Graph<STATE, EVENT, SIDE_EFFECT>? = null
+        graph: Graph<STATE, EVENT, SIDE_EFFECT>? = null
 ) {
     private var initialState = graph?.initialState
     private val stateDefinitions = LinkedHashMap(graph?.stateDefinitions ?: emptyMap())
     private val onTransitionListeners = ArrayList(graph?.onTransitionListeners ?: emptyList())
+    private val onEnterListeners = mutableListOf<(STATE, EVENT) -> Unit>().apply { graph?.let { addAll(graph.onEnterListeners) } }
+    private val onExitListeners = mutableListOf<(STATE, EVENT) -> Unit>().apply { graph?.let { addAll(graph.onExitListeners) } }
 
     fun initialState(initialState: STATE) {
         this.initialState = initialState
@@ -30,8 +32,16 @@ class GraphBuilder<STATE : Any, EVENT : Any, SIDE_EFFECT : Any>(
         onTransitionListeners.add(listener)
     }
 
+    fun onEnter(listener: (STATE, EVENT) -> Unit) {
+        onEnterListeners.add { state, cause -> listener(state, cause) }
+    }
+
+    fun onExit(listener: (STATE, EVENT) -> Unit) {
+        onExitListeners.add { state, cause -> listener(state, cause) }
+    }
+
     fun build(): Graph<STATE, EVENT, SIDE_EFFECT> {
-        return Graph(requireNotNull(initialState), stateDefinitions.toMap(), onTransitionListeners.toList())
+        return Graph(requireNotNull(initialState), stateDefinitions.toMap(), onTransitionListeners.toList(), onEnterListeners, onExitListeners)
     }
 
     inner class StateDefinitionBuilder<S : STATE> {
@@ -53,14 +63,14 @@ class GraphBuilder<STATE : Any, EVENT : Any, SIDE_EFFECT : Any>(
         }
 
         inline fun <reified E : EVENT> on(
-            noinline createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
+                noinline createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
         ) {
             return on(any(), createTransitionTo)
         }
 
         inline fun <reified E : EVENT> on(
-            event: E,
-            noinline createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
+                event: E,
+                noinline createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
         ) {
             return on(eq(event), createTransitionTo)
         }

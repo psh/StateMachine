@@ -6,7 +6,7 @@ class State<STATE : Any, EVENT : Any, SIDE_EFFECT : Any> internal constructor() 
     val transitions = linkedMapOf<Matcher<EVENT, EVENT>, (STATE, EVENT) -> TransitionTo<STATE, SIDE_EFFECT>>()
 
     data class TransitionTo<out STATE : Any, out SIDE_EFFECT : Any> internal constructor(
-        val toState: STATE,
-        val sideEffect: SIDE_EFFECT?
+            val toState: STATE,
+            val sideEffect: SIDE_EFFECT?
     )
 }

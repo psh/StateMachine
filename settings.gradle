@@ -1,5 +1,6 @@
 rootProject.name = 'state-machine'
 include 'core'
 
+include ':samples:global-notification'
 include ':samples:matter'
 include ':samples:turnstile'
