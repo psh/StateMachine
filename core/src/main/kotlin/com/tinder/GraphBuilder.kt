@@ -1,21 +1,23 @@
 package com.tinder
 
 class GraphBuilder<STATE : Any, EVENT : Any, SIDE_EFFECT : Any>(
-        graph: Graph<STATE, EVENT, SIDE_EFFECT>? = null
+    graph: Graph<STATE, EVENT, SIDE_EFFECT>? = null
 ) {
     private var initialState = graph?.initialState
     private val stateDefinitions = LinkedHashMap(graph?.stateDefinitions ?: emptyMap())
     private val onTransitionListeners = ArrayList(graph?.onTransitionListeners ?: emptyList())
-    private val onEnterListeners = mutableListOf<(STATE, EVENT) -> Unit>().apply { graph?.let { addAll(graph.onEnterListeners) } }
-    private val onExitListeners = mutableListOf<(STATE, EVENT) -> Unit>().apply { graph?.let { addAll(graph.onExitListeners) } }
+    private val onEnterListeners =
+        mutableListOf<(STATE, EVENT) -> Unit>().apply { graph?.let { addAll(graph.onEnterListeners) } }
+    private val onExitListeners =
+        mutableListOf<(STATE, EVENT) -> Unit>().apply { graph?.let { addAll(graph.onExitListeners) } }
 
     fun initialState(initialState: STATE) {
         this.initialState = initialState
     }
 
     fun <S : STATE> state(
-            stateMatcher: Matcher<STATE, S>,
-            init: StateDefinitionBuilder<S>.() -> Unit
+        stateMatcher: Matcher<STATE, S>,
+        init: StateDefinitionBuilder<S>.() -> Unit
     ) {
         stateDefinitions[stateMatcher] = StateDefinitionBuilder<S>().apply(init).build()
     }
@@ -41,7 +43,13 @@ class GraphBuilder<STATE : Any, EVENT : Any, SIDE_EFFECT : Any>(
     }
 
     fun build(): Graph<STATE, EVENT, SIDE_EFFECT> {
-        return Graph(requireNotNull(initialState), stateDefinitions.toMap(), onTransitionListeners.toList(), onEnterListeners, onExitListeners)
+        return Graph(
+            requireNotNull(initialState),
+            stateDefinitions.toMap(),
+            onTransitionListeners.toList(),
+            onEnterListeners,
+            onExitListeners
+        )
     }
 
     inner class StateDefinitionBuilder<S : STATE> {
@@ -53,8 +61,8 @@ class GraphBuilder<STATE : Any, EVENT : Any, SIDE_EFFECT : Any>(
         inline fun <reified R : EVENT> eq(value: R): Matcher<EVENT, R> = Matcher.eq(value)
 
         fun <E : EVENT> on(
-                eventMatcher: Matcher<EVENT, E>,
-                createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
+            eventMatcher: Matcher<EVENT, E>,
+            createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
         ) {
             stateDefinition.transitions[eventMatcher] = { state, event ->
                 @Suppress("UNCHECKED_CAST")
@@ -63,17 +71,13 @@ class GraphBuilder<STATE : Any, EVENT : Any, SIDE_EFFECT : Any>(
         }
 
         inline fun <reified E : EVENT> on(
-                noinline createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
-        ) {
-            return on(any(), createTransitionTo)
-        }
+            noinline createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
+        ) = on(any(), createTransitionTo)
 
         inline fun <reified E : EVENT> on(
-                event: E,
-                noinline createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
-        ) {
-            return on(eq(event), createTransitionTo)
-        }
+            event: E,
+            noinline createTransitionTo: S.(E) -> State.TransitionTo<STATE, SIDE_EFFECT>
+        ) = on(eq(event), createTransitionTo)
 
         fun onEnter(listener: S.(EVENT) -> Unit) = with(stateDefinition) {
             onEnterListeners.add { state, cause ->
@@ -93,7 +97,7 @@ class GraphBuilder<STATE : Any, EVENT : Any, SIDE_EFFECT : Any>(
 
         @Suppress("UNUSED") // The unused warning is probably a compiler bug.
         fun S.transitionTo(state: STATE, sideEffect: SIDE_EFFECT? = null) =
-                State.TransitionTo(state, sideEffect)
+            State.TransitionTo(state, sideEffect)
 
         @Suppress("UNUSED") // The unused warning is probably a compiler bug.
         fun S.dontTransition(sideEffect: SIDE_EFFECT? = null) = transitionTo(this, sideEffect)

@@ -21,9 +21,16 @@ sealed class MatterEvent {
     object OnCondensed : MatterEvent()
 }
 
-sealed class MatterSideEffect
-
-val stateMachine = StateMachine.create<MatterState, MatterEvent, MatterSideEffect> {
+// Global notifications are notified before the state specific ones, so should see
+//
+//     "Global Enter <state> by <event>"
+//
+// and then
+//
+//     "Enter <state>"
+//
+// in the logs, as the test runs.
+val stateMachine = StateMachine.create<MatterState, MatterEvent, Any> {
     initialState(Solid)
 
     onEnter { state, cause ->

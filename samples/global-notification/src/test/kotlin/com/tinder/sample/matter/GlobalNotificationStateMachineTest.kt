@@ -2,11 +2,8 @@ package com.tinder.sample.matter
 
 import com.nhaarman.mockitokotlin2.inOrder
 import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.then
 import com.tinder.StateMachine
-import com.tinder.Transition
 import com.tinder.sample.matter.MatterEvent.*
-import com.tinder.sample.matter.MatterSideEffect.*
 import com.tinder.sample.matter.MatterState.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -97,7 +94,7 @@ class GlobalNotificationStateMachineTest {
         }
     }
 
-    private fun givenStateIs(state: MatterState): StateMachine<MatterState, MatterEvent, MatterSideEffect> {
+    private fun givenStateIs(state: MatterState): StateMachine<MatterState, MatterEvent, Any> {
         return stateMachine.with { initialState(state) }
     }
 }
