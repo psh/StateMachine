@@ -1,7 +1,7 @@
 package com.tinder.sample.matter
 
-import com.tinder.StateMachine
 import com.tinder.Transition
+import com.tinder.graph
 import com.tinder.sample.matter.MatterEvent.*
 import com.tinder.sample.matter.MatterSideEffect.*
 import com.tinder.sample.matter.MatterState.Liquid
@@ -16,7 +16,7 @@ var logger: Logger = object : Logger {
     override fun log(message: String) = Unit
 }
 
-val stateMachine = StateMachine.create<MatterState, MatterEvent, MatterSideEffect> {
+val stateMachine = graph<MatterState, MatterEvent, MatterSideEffect> {
     initialState(Solid)
 
     state<Solid> {

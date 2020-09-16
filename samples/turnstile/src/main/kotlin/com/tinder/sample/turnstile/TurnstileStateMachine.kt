@@ -1,13 +1,13 @@
 package com.tinder.sample.turnstile
 
-import com.tinder.StateMachine
+import com.tinder.graph
 import com.tinder.sample.turnstile.TurnstileCommand.*
 import com.tinder.sample.turnstile.TurnstileEvent.*
 import com.tinder.sample.turnstile.TurnstileState.*
 
 private const val FARE_PRICE = 50
 
-val stateMachine = StateMachine.create<TurnstileState, TurnstileEvent, TurnstileCommand> {
+val stateMachine = graph<TurnstileState, TurnstileEvent, TurnstileCommand> {
     initialState(Locked(credit = 0))
 
     state<Locked> {

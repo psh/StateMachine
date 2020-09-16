@@ -1,6 +1,6 @@
 package com.tinder.sample.matter
 
-import com.tinder.StateMachine
+import com.tinder.graph
 import com.tinder.sample.matter.MatterEvent.*
 import com.tinder.sample.matter.MatterState.*
 
@@ -30,7 +30,7 @@ sealed class MatterEvent {
 //     "Enter <state>"
 //
 // in the logs, as the test runs.
-val stateMachine = StateMachine.create<MatterState, MatterEvent, Any> {
+val stateMachine = graph<MatterState, MatterEvent, Any> {
     initialState(Solid)
 
     onEnter { state, cause ->

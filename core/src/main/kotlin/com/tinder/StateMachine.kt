@@ -90,3 +90,5 @@ class StateMachine<STATE : Any, EVENT : Any, SIDE_EFFECT : Any> private construc
         }
     }
 }
+
+fun <S : Any, E : Any, SE : Any> graph(init: GraphBuilder<S, E, SE>.() -> Unit) = StateMachine.create(init)
